@@ -3,11 +3,13 @@ import os
 import cv2
 
 KNOWN_FACES_DIR = "D:/Downloads/ML_Training/face_recognition_training/known_faces"
-UNKNOWN_FACES_DIR = "D:/Downloads/ML_Training/face_recognition_training/unknown_faces"
+#UNKNOWN_FACES_DIR = "D:/Downloads/ML_Training/face_recognition_training/unknown_faces"
 TOLERANCE = 0.6
 FRAME_THICKNESS = 2
 FONT_THICKNESS = 2
 MODEL = "cnn"  #hog
+
+video = cv2.VideoCapture(0)  #could pu in a filename "D:/Videos/Captures/YDXJ0675.mp4"
 
 print("loading known faces...")
 
@@ -25,14 +27,16 @@ for name in os.listdir(KNOWN_FACES_DIR):
 
 print("processing unknown faces...")
 
-for filename in os.listdir(UNKNOWN_FACES_DIR):
-    print("Filename is: {}".format(filename))
-    image = face_recognition.load_image_file(f"{UNKNOWN_FACES_DIR}/{filename}")
+while True:
+    #print("Filename is: {}".format(filename))
+    #image = face_recognition.load_image_file(f"{UNKNOWN_FACES_DIR}/{filename}")
+
+    ret, image = video.read()
     locations = face_recognition.face_locations(image, model=MODEL)
     encodings = face_recognition.face_encodings(image, locations)
 
-    # convert to work with cv2
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    # convert to work with cv2 for images, no need for video feed
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     for face_encoding, face_location in zip(encodings, locations):
         results = face_recognition.compare_faces(known_faces, face_encoding, TOLERANCE)
@@ -53,6 +57,10 @@ for filename in os.listdir(UNKNOWN_FACES_DIR):
             #cv2.rectangle(image, top_left, bottom_right, color, cv2.FILLED)
             cv2.putText(image, match, (face_location[3]+10, face_location[2]+15), cv2.FONT_HERSHEY_SIMPLEX, \
                         0.5, (200, 200, 200), FONT_THICKNESS)
-        cv2.imshow(filename, image)
-        cv2.waitKey(3000)
-        cv2.destroyWindow(filename)
+        cv2.startWindowThread()
+        cv2.namedWindow("vid feed")
+        cv2.imshow("vid feed", image)
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
+        #cv2.waitKey(3000)
+        cv2.destroyWindow("vid feed")
