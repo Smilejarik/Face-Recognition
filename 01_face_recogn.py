@@ -1,6 +1,13 @@
 import face_recognition
 import os
 import cv2
+import dlib
+import dlib.cuda as cuda
+
+#detect if using CUDA
+print(cuda.get_num_devices())
+
+print("Dlib CUDA: {}".format(dlib.DLIB_USE_CUDA))
 
 KNOWN_FACES_DIR = "D:/Downloads/ML_Training/face_recognition_training/known_faces"
 UNKNOWN_FACES_DIR = "D:/Downloads/ML_Training/face_recognition_training/unknown_faces"
