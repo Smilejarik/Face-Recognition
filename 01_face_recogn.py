@@ -35,6 +35,10 @@ print("processing unknown faces...")
 for filename in os.listdir(UNKNOWN_FACES_DIR):
     print("Filename is: {}".format(filename))
     image = face_recognition.load_image_file(f"{UNKNOWN_FACES_DIR}/{filename}")
+    resize_to_w = 1200
+    img_w = image.shape[1]
+    img_h = image.shape[0]
+    image = cv2.resize(image, (resize_to_w, int(resize_to_w*img_h/img_w)))
     locations = face_recognition.face_locations(image, model=MODEL)
     encodings = face_recognition.face_encodings(image, locations)
 
@@ -60,6 +64,6 @@ for filename in os.listdir(UNKNOWN_FACES_DIR):
             #cv2.rectangle(image, top_left, bottom_right, color, cv2.FILLED)
             cv2.putText(image, match, (face_location[3]+10, face_location[2]+15), cv2.FONT_HERSHEY_SIMPLEX, \
                         0.5, (200, 200, 200), FONT_THICKNESS)
-        cv2.imshow(filename, image)
-        cv2.waitKey(3000)
-        cv2.destroyWindow(filename)
+    cv2.imshow(filename, image)
+    cv2.waitKey(3000)
+    cv2.destroyWindow(filename)
